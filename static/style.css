@@ -1,0 +1,97 @@
+/* ============================================
+   MediHealth Basic Styling
+   Clean, simple, readable
+   ============================================ */
+
+/* Overall page */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f9fc;    /* pale medical blue */
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* Main heading */
+h1 {
+    text-align: center;
+    color: #006ba6;               /* NHS-style blue */
+}
+
+/* Section headings */
+h2 {
+    margin-top: 40px;
+    color: #0074b8;
+}
+
+/* Forms */
+form {
+    background: white;
+    padding: 15px;
+    border: 1px solid #dce7f1;
+    border-radius: 6px;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="date"],
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #c2d4e2;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    background-color: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+button:hover {
+    background-color: #005f99;
+}
+
+/* Appointment list */
+#appointments-list {
+    list-style: none;
+    padding: 0;
+}
+
+#appointments-list li {
+    background: white;
+    border: 1px solid #dce7f1;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+/* Message box */
+#messageBox {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* For later CRUD buttons (Edit / Delete) */
+button.small-btn {
+    width: auto;
+    padding: 5px 10px;
+    margin-right: 5px;
+    font-size: 14px;
+}

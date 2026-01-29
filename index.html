@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>MediHealth Appointments</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+  <h1>MediHealth Appointments</h1>
+  <p>This page lets you book appointments and save them into a Supabase database.</p>
+
+  <!-- Appointment booking form -->
+  <form id="appointment-form">
+
+    <label>Patient Name:</label>
+    <input id="nameInput" type="text" required>
+
+    <label>Appointment date:</label>
+    <input id="dateInput" type="date" required>
+
+    <label>Notes (Optional): </label>
+    <input id="notesInput" type="text">
+
+    <button type="submit">Book appointment</button>
+  </form>
+
+  <h2>All appointments</h2>
+  <ul id="appointments-list">
+    <!-- JavaScript will add <li> items here -->
+  </ul>
+
+  <!-- Load your JavaScript file from the static folder -->
+  <script src="static/app.js"></script>
+</body>
+</html>
