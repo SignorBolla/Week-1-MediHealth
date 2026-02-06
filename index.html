@@ -1,36 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MediHealth Appointments</title>
-  <link rel="stylesheet" href="static/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>MediHealth — Premium Appointment Booking</title>
+
+  <link rel="stylesheet" href="static/style.css" />
 </head>
+
 <body>
 
-  <h1>MediHealth Appointments</h1>
-  <p>This page lets you book appointments and save them into a Supabase database.</p>
+  <!-- Accessible skip link -->
+  <a href="#main" class="skip-link">Skip to main content</a>
 
-  <!-- Appointment booking form -->
-  <form id="appointment-form">
+  <!-- Sticky translucent navigation -->
+  <header class="nav">
+    <div class="nav-container">
+      <h1 class="nav-logo">MediHealth</h1>
+      <nav aria-label="Main Navigation" class="nav-menu">
+        <a href="#booking">Book</a>
+        <a href="#appointments">Appointments</a>
+      </nav>
+    </div>
+  </header>
 
-    <label>Patient Name:</label>
-    <input id="nameInput" type="text" required>
+  <main id="main">
 
-    <label>Appointment date:</label>
-    <input id="dateInput" type="date" required>
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="hero-inner">
+        <h2 class="hero-title">Your Health, Carefully Scheduled</h2>
+        <p class="hero-subtitle">
+          A premium medical appointment experience built with comfort, trust, and elegant design.
+        </p>
+      </div>
+    </section>
 
-    <label>Notes (Optional): </label>
-    <input id="notesInput" type="text">
+    <!-- BOOKING + LIST GRID -->
+    <section class="grid">
 
-    <button type="submit">Book appointment</button>
-  </form>
+      <!-- BOOKING CARD -->
+      <article id="booking" class="card card-form fade-in" aria-labelledby="booking-title">
+        <h3 id="booking-title" class="card-title">Book an Appointment</h3>
 
-  <h2>All appointments</h2>
-  <ul id="appointments-list">
-    <!-- JavaScript will add <li> items here -->
-  </ul>
+        <!-- Global Status Messages -->
+        <div id="status" class="status" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- Load your JavaScript file from the static folder -->
-  <script src="static/app.js"></script>
+        <form id="appointmentForm" novalidate>
+          <div class="form-field">
+            <label for="name">Patient Name *</label>
+            <input id="name" name="patient_name" type="text" required />
+            <small class="error-message" id="error-name"></small>
+          </div>
+
+          <div class="form-field">
+            <label for="email">Patient Email *</label>
+            <input id="email" name="patient_email" type="email" required />
+            <small class="error-message" id="error-email"></small>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="date">Date *</label>
+              <input id="date" name="appointment_date" type="date" required />
+              <small class="error-message" id="error-date"></small>
+            </div>
+
+            <div class="form-field">
+              <label for="time">Time *</label>
+              <input id="time" name="appointment_time" type="time" required />
+              <small class="error-message" id="error-time"></small>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="reason">Reason</label>
+            <input id="reason" name="reason_for_visit" type="text" />
+          </div>
+
+          <div class="form-field">
+            <label for="notes">Notes (optional)</label>
+            <textarea id="notes" name="notes" rows="3"></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="submitBtn" class="btn-primary">
+              <span class="btn-label">Book Appointment</span>
+              <span class="spinner"></span>
+            </button>
+            <button type="button" id="cancelEdit" class="btn-secondary" hidden>
+              Cancel Edit
+            </button>
+          </div>
+        </form>
+      </article>
+
+      <!-- APPOINTMENTS CARD -->
+      <article id="appointments" class="card fade-in" aria-labelledby="list-title">
+        <h3 id="list-title" class="card-title">All Appointments</h3>
+        <ul id="appointmentsList" class="appointments-list" aria-live="polite"></ul>
+      </article>
+
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© MediHealth — Premium Accessible Healthcare Design</p>
+  </footer>
+
+  <script type="module" src="static/app.js"></script>
 </body>
 </html>

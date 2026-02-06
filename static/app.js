@@ -1,142 +1,218 @@
-// =============================================================
-// Supabase connection settings
-// =============================================================
+// ------------------------------------------------------------
+// MediHealth Premium Booking JS (Modular, ES6+, Clean Architecture)
+// ------------------------------------------------------------
 
-// TODO: Replace these with your real values from Supabase
-// Supabase → Settings → Data API → Project URL
-const API_URL = "https://lfbgyaavffihpezqkafj.supabase.co";
+// API CONFIG --------------------------------------------------
+const API = {
+  url: "https://lfbgyaavffihpezqkafj.supabase.co",
+  key: "sb_publishable_gOZ2Oz0QSx3MG5yVD6Zi6g_IvcprIKH",
+};
 
-// Supabase → Settings → API Keys → Create new API keys → Publishable key
-const API_KEY = "sb_publishable_gOZ2Oz0QSx3MG5yVD6Zi6g_IvcprIKH";
+// DOM SELECTORS ----------------------------------------------
+const DOM = {
+  form: document.getElementById("appointmentForm"),
+  list: document.getElementById("appointmentsList"),
+  status: document.getElementById("status"),
+  cancelEdit: document.getElementById("cancelEdit"),
+  submit: document.getElementById("submitBtn"),
+  inputs: {
+    name: document.getElementById("name"),
+    email: document.getElementById("email"),
+    date: document.getElementById("date"),
+    time: document.getElementById("time"),
+    reason: document.getElementById("reason"),
+    notes: document.getElementById("notes"),
+  },
+};
 
-// Name of the table you created in Supabase
-const APPOINTMENTS_TABLE = "appointments";
+// UTILITIES ---------------------------------------------------
+const Utils = {
+  async fetchJSON(url, options = {}) {
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        apikey: API.key,
+        Authorization: `Bearer ${API.key}`,
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+    if (!res.ok) throw new Error("API error");
+    return res.json();
+  },
 
-console.log("JavaScript loaded");
-console.log("Using Supabase:", API_URL);
+  showStatus(message, type = "success") {
+    DOM.status.textContent = message;
+    DOM.status.className = `status status-${type}`;
+    DOM.status.style.opacity = "1";
+    setTimeout(() => (DOM.status.style.opacity = "0"), 3000);
+  },
 
+  clearErrors() {
+    document.querySelectorAll(".error-message").forEach((el) => {
+      el.style.display = "none";
+      el.textContent = "";
+    });
+  },
 
-// =============================================================
-// Run when the page has finished loading
-// =============================================================
+  validate() {
+    const errors = {};
+    const { name, email, date, time } = DOM.inputs;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("appointment-form");
+    if (!name.value.trim()) errors.name = "Name required";
+    if (!email.value.trim() || !email.value.includes("@"))
+      errors.email = "Valid email required";
+    if (!date.value) errors.date = "Date required";
+    if (!time.value) errors.time = "Time required";
 
-  // When the form is submitted, stop the page reloading and add the appointment
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();      // stop the default form submit (page reload)
-    await addAppointment();      // run our function to send data to Supabase
-  });
+    return errors;
+  },
+};
 
-  // Load existing appointments when the page opens
-  loadAppointments();
-});
+// DATA OPERATIONS ---------------------------------------------
+const Appointments = {
+  getAll: () => Utils.fetchJSON(`${API.url}/rest/v1/appointments?select=*`),
 
+  create: (data) =>
+    Utils.fetchJSON(`${API.url}/rest/v1/appointments`, {
+      method: "POST",
+      body: JSON.stringify([data]),
+      headers: {
+        "Prefer": "return=representation"
+      }
+    }),
 
-// =============================================================
-// Add a new appointment (CREATE)
-// =============================================================
+  update: (appointment_id, data) =>
+    Utils.fetchJSON(`${API.url}/rest/v1/appointments?appointment_id=eq.${appointment_id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+      headers: {
+        "Prefer": "return=representation"
+      }
+    }),
 
-async function addAppointment() {
-  // 1. Read values from the form
-  const name = document.getElementById("nameInput").value.trim();
-  const date = document.getElementById("dateInput").value;
-  const notes = document.getElementById("notesInput").value.trim();
+  remove: (appointment_id) =>
+    Utils.fetchJSON(`${API.url}/rest/v1/appointments?appointment_id=eq.${appointment_id}`, {
+      method: "DELETE",
+      headers: {
+        "Prefer": "return=representation"
+      }
+    }),
+};
 
-  // 2. Basic validation
-  if (name === "" || date === "") {
-    alert("Please fill in patient name and appointment date.");
+// UI LOGIC -----------------------------------------------------
+const UI = {
+  editingID: null,
+
+  renderList(items) {
+    DOM.list.innerHTML = "";
+
+    if (!items.length) {
+      DOM.list.innerHTML = `<li>No appointments yet.</li>`;
+      return;
+    }
+
+    items.forEach((item) => {
+      const li = document.createElement("li");
+      li.className = "appointment-item";
+      li.innerHTML = `
+        <strong>${item.patient_name}</strong> — ${item.patient_email}<br />
+        ${item.appointment_date} at ${item.appointment_time}
+        <div class="appointment-controls">
+          <button data-edit="${item.appointment_id}" class="btn-secondary">Edit</button>
+          <button data-delete="${item.appointment_id}" class="btn-secondary">Delete</button>
+        </div>
+      `;
+      DOM.list.appendChild(li);
+    });
+  },
+
+  fillForm(data) {
+    DOM.inputs.name.value = data.patient_name;
+    DOM.inputs.email.value = data.patient_email;
+    DOM.inputs.date.value = data.appointment_date;
+    DOM.inputs.time.value = data.appointment_time;
+    DOM.inputs.reason.value = data.reason_for_visit || "";
+    DOM.inputs.notes.value = data.notes || "";
+  },
+
+  resetForm() {
+    DOM.form.reset();
+    Utils.clearErrors();
+    UI.editingID = null;
+    DOM.cancelEdit.hidden = true;
+    DOM.submit.querySelector(".btn-label").textContent = "Book Appointment";
+  },
+};
+
+// EVENT HANDLERS ----------------------------------------------
+DOM.form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  Utils.clearErrors();
+
+  const errors = Utils.validate();
+  if (Object.keys(errors).length) {
+    Object.entries(errors).forEach(([field, msg]) => {
+      const err = document.getElementById(`error-${field}`);
+      err.textContent = msg;
+      err.style.display = "block";
+    });
     return;
   }
 
-  // 3. Build the object using Supabase column names
-  // These property names MUST match your Supabase table columns
-  const body = {
-    patient_name: name,      // column: patient_name
-    appointment_date: date,  // column: appointment_date
-    notes: notes             // column: notes
+  // Build payload with only valid columns
+  const payload = {
+    patient_name: DOM.inputs.name.value.trim(),
+    patient_email: DOM.inputs.email.value.trim(),
+    appointment_date: DOM.inputs.date.value,
+    appointment_time: DOM.inputs.time.value,
+    reason_for_visit: DOM.inputs.reason.value.trim()
+    // notes: DOM.inputs.notes.value.trim(), // Remove if not in table
   };
 
   try {
-    // 4. Send a POST request to Supabase
-    const response = await fetch(`${API_URL}/rest/v1/${APPOINTMENTS_TABLE}`, {
-      method: "POST",
-      headers: {
-        "apikey": API_KEY,
-        "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal"
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Supabase add error:", err);
-      alert("Could not add appointment. Check the console for details.");
-      return;
+    if (UI.editingID) {
+      await Appointments.update(Number(UI.editingID), payload);
+      Utils.showStatus("Appointment updated");
+    } else {
+      await Appointments.create(payload);
+      Utils.showStatus("Appointment created");
     }
-
-    alert("Appointment booked successfully.");
-
-    // 5. Clear the form inputs
-    document.getElementById("nameInput").value = "";
-    document.getElementById("dateInput").value = "";
-    document.getElementById("notesInput").value = "";
-
-    // 6. Reload the list of appointments
+    UI.resetForm();
     loadAppointments();
-
   } catch (error) {
-    console.error(error);
-    alert("Something went wrong while adding the appointment.");
+    Utils.showStatus(error.message || "Supabase error", "error");
   }
-}
+});
 
+DOM.list.addEventListener("click", async (e) => {
+  if (e.target.dataset.edit) {
+    const appointment_id = e.target.dataset.edit;
+    UI.editingID = appointment_id;
 
-// =============================================================
-// Load all appointments from Supabase (READ)
-// =============================================================
+    const items = await Appointments.getAll();
+    const appt = items.find((x) => String(x.appointment_id) === String(appointment_id));
 
+    UI.fillForm(appt);
+    DOM.submit.querySelector(".btn-label").textContent = "Update Appointment";
+    DOM.cancelEdit.hidden = false;
+  }
+
+  if (e.target.dataset.delete) {
+    if (confirm("Delete this appointment?")) {
+      await Appointments.remove(e.target.dataset.delete);
+      Utils.showStatus("Appointment deleted");
+      loadAppointments();
+    }
+  }
+});
+
+DOM.cancelEdit.addEventListener("click", () => UI.resetForm());
+
+// INITIAL LOAD ------------------------------------------------
 async function loadAppointments() {
-  const list = document.getElementById("appointments-list");
-  list.innerHTML = "<li>Loading appointments...</li>";
-
-  try {
-    const response = await fetch(`${API_URL}/rest/v1/${APPOINTMENTS_TABLE}?select=*`, {
-      headers: {
-        "apikey": API_KEY,
-        "Authorization": `Bearer ${API_KEY}`
-      }
-    });
-
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Supabase load error:", err);
-      list.innerHTML = "<li>Could not load appointments.</li>";
-      return;
-    }
-
-    const appointments = await response.json();
-
-    if (appointments.length === 0) {
-      list.innerHTML = "<li>No appointments found.</li>";
-      return;
-    }
-
-    // Build list items from the data
-    list.innerHTML = appointments.map(a => `
-      <li>
-        <strong>${a.patient_name}</strong>
-        on ${a.appointment_date}
-        ${a.notes ? `- ${a.notes}` : ""}
-      </li>
-    `).join("");
-
-  } catch (error) {
-    console.error(error);
-    list.innerHTML = "<li>Error loading appointments.</li>";
-  }
+  const items = await Appointments.getAll();
+  UI.renderList(items);
 }
 
+document.addEventListener("DOMContentLoaded", loadAppointments);

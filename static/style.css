@@ -1,97 +1,263 @@
-/* ============================================
-   MediHealth Basic Styling
-   Clean, simple, readable
-   ============================================ */
+/* ---------------------------------------------------------
+   Premium Apple‑Inspired Design System — MediHealth
+   --------------------------------------------------------- */
 
-/* Overall page */
+:root {
+  /* Colors */
+  --white: #ffffff;
+  --bg: #f6f8fc;
+  --surface: #ffffffee;
+  --outline: #dadde5;
+  --text: #1a1a1a;
+  --muted: #636c7a;
+  --primary: #007aff;
+  --primary-soft: #e3f0ff;
+
+  /* Shadows */
+  --shadow-soft: 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-card: 0 16px 40px rgba(0,0,0,0.08);
+
+  /* Radius */
+  --radius: 18px;
+  --radius-sm: 12px;
+
+  /* Spacing */
+  --space-1: 6px;
+  --space-2: 12px;
+  --space-3: 20px;
+  --space-4: 32px;
+  --space-5: 48px;
+
+  /* Animation */
+  --transition: 180ms cubic-bezier(.4, .2, .2, 1);
+}
+
+/* Smooth motion fallback */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* Global reset */
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f9fc;    /* pale medical blue */
-    margin: 0;
-    padding: 20px;
-    color: #333;
+  margin: 0;
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+  line-height: 1.6;
 }
 
-/* Main heading */
-h1 {
-    text-align: center;
-    color: #006ba6;               /* NHS-style blue */
+/* Skip link */
+.skip-link {
+  position: absolute;
+  padding: 10px 14px;
+  top: 10px;
+  left: 10px;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  transform: translateY(-150%);
+  transition: transform var(--transition);
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* NAVIGATION ------------------------------------------------ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(20px);
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
 }
 
-/* Section headings */
-h2 {
-    margin-top: 40px;
-    color: #0074b8;
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* Forms */
-form {
-    background: white;
-    padding: 15px;
-    border: 1px solid #dce7f1;
-    border-radius: 6px;
-    max-width: 400px;
-    margin-bottom: 20px;
+.nav-logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--primary);
+}
+
+.nav-menu a {
+  margin-left: var(--space-3);
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+.nav-menu a:hover { color: var(--primary); }
+
+/* HERO ------------------------------------------------------- */
+.hero {
+  padding: var(--space-5) 0 var(--space-4);
+  background: linear-gradient(to bottom right, #fafdff, #eef2ff);
+  text-align: center;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-2);
+}
+
+.hero-subtitle {
+  max-width: 620px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+/* GRID ------------------------------------------------------- */
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3);
+}
+
+@media (min-width: 900px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* CARD ------------------------------------------------------- */
+.card {
+  background: var(--surface);
+  backdrop-filter: blur(30px);
+  border-radius: var(--radius);
+  border: 1px solid var(--outline);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+/* FORM ------------------------------------------------------- */
+.form-field {
+  margin-bottom: var(--space-3);
+  display: flex;
+  flex-direction: column;
 }
 
 label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
+  font-weight: 600;
+  margin-bottom: var(--space-1);
 }
 
-/* Inputs */
-input[type="text"],
-input[type="date"],
-input[type="number"] {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    border: 1px solid #c2d4e2;
-    border-radius: 4px;
-    box-sizing: border-box;
+input, textarea {
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--outline);
+  background: #f7f9fb;
+  font-size: 1rem;
+  transition: box-shadow var(--transition), border-color var(--transition);
 }
 
-button {
-    margin-top: 15px;
-    padding: 10px;
-    width: 100%;
-    background-color: #007acc;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 15px;
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+  background: var(--white);
 }
 
-button:hover {
-    background-color: #005f99;
+.form-row { display: flex; gap: var(--space-3); }
+
+/* Error messages */
+.error-message {
+  color: #d22e2e;
+  font-size: 0.9rem;
+  display: none;
 }
 
-/* Appointment list */
-#appointments-list {
-    list-style: none;
-    padding: 0;
+/* Buttons */
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-#appointments-list li {
-    background: white;
-    border: 1px solid #dce7f1;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 4px;
+.btn-primary:hover { background: #0066d9; transform: translateY(-1px); }
+
+.btn-secondary {
+  background: #f0f0f4;
+  color: var(--muted);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--outline);
+  cursor: pointer;
 }
 
-/* Message box */
-#messageBox {
-    font-weight: bold;
-    margin-bottom: 15px;
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ffffff55;
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  display: none;
 }
 
-/* For later CRUD buttons (Edit / Delete) */
-button.small-btn {
-    width: auto;
-    padding: 5px 10px;
-    margin-right: 5px;
-    font-size: 14px;
+/* APPOINTMENTS LIST ------------------------------------------ */
+.appointments-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.appointment-item {
+  border: 1px solid var(--outline);
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.appointment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+}
+
+.appointment-controls { margin-top: var(--space-2); }
+.appointment-controls button { margin-right: 10px; }
+
+/* FOOTER ------------------------------------------------------- */
+.footer {
+  text-align: center;
+  padding: var(--space-4);
+  color: var(--muted);
+}
+
+/* ANIMATIONS --------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
